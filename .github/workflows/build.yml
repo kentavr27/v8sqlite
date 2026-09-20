@@ -1,0 +1,28 @@
+name: Build v8sqlite DLL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      matrix:
+        arch: [Win32, x64]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -B build_${{ matrix.arch }} -A ${{ matrix.arch }}
+
+    - name: Build Project
+      run: cmake --build build_${{ matrix.arch }} --config Release
+
+    - name: Upload DLL to Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: v8sqlite-${{ matrix.arch }}
+        path: build_${{ matrix.arch }}/Release/v8sqlite.dll
